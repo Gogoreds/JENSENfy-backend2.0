@@ -1,21 +1,19 @@
 require("dotenv").config();
+
 const express = require("express");
 const querystring = require("querystring");
-const app = express();
 const axios = require("axios");
+
+const app = express();
 const port = 8888;
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = process.env.REDIRECT_URI;
 
-console.log(CLIENT_ID);
-// to test the dotenv
-// console.log(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
-
 app.get("/", (req, res) => {
   const data = {
-    name: "Hola",
+    name: "Brittany",
     isAwesome: true,
   };
 
@@ -76,22 +74,16 @@ app.get("/callback", (req, res) => {
   })
     .then((response) => {
       if (response.status === 200) {
-        const { access_token, token_type } = response.data;
+        const { access_token, refresh_token } = response.data;
 
-        // axios
-        //   .get("https://api.spotify.com/v1/me", {
-        //     headers: {
-        //       Authorization: `${token_type} ${access_token}`,
-        //     },
-        //   })
-        //   .then((response) => {
-        //     res.send(`<pre>${JSON.stringify(response.data, null, 2)}</pre>`);
-        //   })
-        //   .catch((error) => {
-        //     res.send(error);
-        //   });
+        const queryParams = querystring.stringify({
+          access_token,
+          refresh_token,
+        });
+
+        res.redirect(`http://localhost:3000/?${queryParams}`);
       } else {
-        res.send(response);
+        res.redirect(`/?${querystring.stringify({ error: "invalid_token" })}`);
       }
     })
     .catch((error) => {
@@ -125,5 +117,5 @@ app.get("/refresh_token", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Express app listening at http://localhost:${port}`);
 });
