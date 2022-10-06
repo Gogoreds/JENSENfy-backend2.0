@@ -3,9 +3,16 @@ require("dotenv").config();
 const express = require("express");
 const querystring = require("querystring");
 const axios = require("axios");
+const cors = require("cors");
+
+const corsOption = {
+  origin: ["http://localhost:3000/"],
+};
 
 const app = express();
 const port = 8888;
+app.use(cors(corsOption));
+app.use(cors());
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
